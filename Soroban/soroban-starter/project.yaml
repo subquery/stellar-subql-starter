@@ -31,15 +31,15 @@ network:
 
 dataSources:
   - kind: soroban/Runtime
-    startBlock: 4719568
+    startBlock: 5000
     mapping:
       file: "./dist/index.js"
       handlers:
         - handler: handleEvent
           kind: soroban/EventHandler
-          # filter:
-
-           # topics:
+          filter:
+            contractId: "34799b3411940249e73d21def8eb2c2b56b285ab8d1ca76d6780ec10a0e8f02e"
+            topics:
               ## Follows standard log filters https://docs.ethers.io/v5/concepts/events/
-              # - Transfer(address indexed from, address indexed to, uint256 amount)
+              - "AAAADwAAAARtaW50"
               # address: "0x60781C2586D68229fde47564546784ab3fACA982"
