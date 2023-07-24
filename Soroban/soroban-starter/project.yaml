@@ -25,21 +25,20 @@ network:
   # When developing your project we suggest getting a private API key
   # You can get them from OnFinality for free https://app.onfinality.io
   # https://documentation.onfinality.io/support/the-enhanced-api-service
-  endpoint: ["https://rpc-futurenet.stellar.org"]
+  endpoint: ["https://rpc-futurenet.stellar.org:443"]
   # Recommended to provide the HTTP endpoint of a full chain dictionary to speed up processing
   # dictionary: "https://gx.api.subquery.network/sq/subquery/eth-dictionary"
 
 dataSources:
   - kind: soroban/Runtime
-    startBlock: 5000
+    startBlock: 25000
     mapping:
       file: "./dist/index.js"
       handlers:
         - handler: handleEvent
           kind: soroban/EventHandler
           filter:
-            contractId: "34799b3411940249e73d21def8eb2c2b56b285ab8d1ca76d6780ec10a0e8f02e"
+          # contractId: ""
             topics:
-              ## Follows standard log filters https://docs.ethers.io/v5/concepts/events/
-              - "AAAADwAAAARtaW50"
-              # address: "0x60781C2586D68229fde47564546784ab3fACA982"
+              - "COUNTER"
+              - "increment"
