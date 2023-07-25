@@ -2,11 +2,11 @@
 # Add the `@index` or `@index(unique: true)` annotation after any non-key field
 # https://academy.subquery.network/build/graphql.html#indexing-by-non-primary-key-field
 
-type Contract @entity {
+type TransferEvent @entity {
   id: ID! # event ID
   contract: String
   ledger: String
-  topic0: String
-  topic1: String
-  topic2: String
+  from: String
+  to: String
+  value: String
 }

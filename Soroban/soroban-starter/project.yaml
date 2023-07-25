@@ -31,7 +31,7 @@ network:
 
 dataSources:
   - kind: soroban/Runtime
-    startBlock: 25000
+    startBlock: 50000
     mapping:
       file: "./dist/index.js"
       handlers:
@@ -40,5 +40,4 @@ dataSources:
           filter:
           # contractId: ""
             topics:
-              - "COUNTER"
-              - "increment"
+              - "transfer"
