@@ -31,24 +31,26 @@ network:
 
 dataSources:
   - kind: soroban/Runtime
-    startBlock: 50000
+    startBlock: 70000
     mapping:
       file: "./dist/index.js"
       handlers:
-        - handler: handleBlock
-          kind: soroban/BlockHandler
-        - handler: handleTransaction
-          kind: soroban/TransactionHandler
-          filter:
-            account: "GAKNXHJ5PCZYFIBNBWB4RCQHH6GDEO7Z334N74BOQUQCHKOURQEPMXCH"
+        # - handler: handleBlock
+        #   kind: soroban/BlockHandler
+        # - handler: handleTransaction
+        #  kind: soroban/TransactionHandler
+        #   filter:
+        #    account: "GAKNXHJ5PCZYFIBNBWB4RCQHH6GDEO7Z334N74BOQUQCHKOURQEPMXCH"
         - handler: handleOperation
           kind: soroban/OperationHandler
           filter:
-            type: "account_merge"
-            source_account: "GAKNXHJ5PCZYFIBNBWB4RCQHH6GDEO7Z334N74BOQUQCHKOURQEPMXCH"
-        - handler: handleEffect
+            type: "payment"
+        - handler: handleCredit
+          kind: soroban/EffectHandler
+          filter:
+            type: "account_credited"
+        - handler: handleCredit
           kind: soroban/EffectHandler
           filter:
             type: "account_debited"
-            account: "GAKNXHJ5PCZYFIBNBWB4RCQHH6GDEO7Z334N74BOQUQCHKOURQEPMXCH"
 
