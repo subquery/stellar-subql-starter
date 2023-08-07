@@ -5,18 +5,16 @@ export async function handleEvent(event: SorobanEvent): Promise<void> {
   logger.info(`New transfer event found at block ${event.ledger}`);
 
   // Get data from the event
-  // The transfer event has the following payload \[env, from, to, value\]
+  // The transfer event has the following payload \[env, from, to\]
   // logger.info(JSON.stringify(event));
   const {
-    topic: [env, from, to, value],
+    topic: [env, from, to],
   } = event;
 
   const ledgerNumber: number = parseInt(event.ledger);
 
   const fromAccount = await checkAndGetAccount(from, ledgerNumber);
   const toAccount = await checkAndGetAccount(to, ledgerNumber);
-
-  logger.info(value, event.value.decoded);
 
   // Create the new transfer entity
   const transfer = Transfer.create({
