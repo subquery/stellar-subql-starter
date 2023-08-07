@@ -41,29 +41,29 @@ For this project, you can try to query with the following GraphQL code to get a 
 ```graphql
 {
   query {
-    transfers(first: 5, orderBy: BLOCK_NUMBER_DESC) {
+    transfers(first: 5, orderBy: VALUE_DESC) {
       totalCount
       nodes {
         id
         date
-        blockNumber
+        ledger
         toId
         fromId
-        amount
+        value
       }
     }
     accounts(first: 5, orderBy: SENT_TRANSFERS_COUNT_DESC) {
       nodes {
         id
-        sentTransfers(first: 5, orderBy: BLOCK_NUMBER_DESC) {
+        sentTransfers(first: 5, orderBy: LEDGER_DESC) {
           totalCount
           nodes {
             id
             toId
-            amount
+            value
           }
         }
-        lastTransferBlock
+        lastTransferLedger
       }
     }
   }
