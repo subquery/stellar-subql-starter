@@ -4,13 +4,13 @@ name: "soroban-subql-starter"
 version: "0.0.1"
 runner:
   node:
-    name: "@subql/node-soroban"
+    name: "@subql/node-stellar"
     version: "*"
   query:
     name: "@subql/query"
     version: "*"
 description: "This project can be use as a starting point for developing your new Stellar Soroban Future Network SubQuery project"
-repository: "https://github.com/subquery/soroban-subql-starter"
+repository: "https://github.com/subquery/stellar-subql-starter"
 
 schema:
   file: "./schema.graphql"
@@ -28,13 +28,13 @@ network:
   # dictionary: "https://gx.api.subquery.network/sq/subquery/eth-dictionary"
 
 dataSources:
-  - kind: soroban/Runtime
+  - kind: stellar/Runtime
     startBlock: 270000 # This is the start block from which you begin indexing
     mapping:
       file: "./dist/index.js"
       handlers:
         - handler: handleEvent
-          kind: soroban/EventHandler
+          kind: stellar/EventHandler
           filter:
             # contractId: "" # You can optionally specify a smart contract address here
             topics:

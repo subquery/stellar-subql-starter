@@ -1,7 +1,7 @@
 import { Account, Transfer } from "../types";
-import { SorobanEvent } from "@subql/types-soroban";
+import { StellarEvent } from "@subql/types-stellar";
 
-export async function handleEvent(event: SorobanEvent): Promise<void> {
+export async function handleEvent(event: StellarEvent): Promise<void> {
   logger.info(`New transfer event found at block ${event.ledger}`);
 
   // Get data from the event
