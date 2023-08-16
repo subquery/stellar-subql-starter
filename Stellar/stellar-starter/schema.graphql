@@ -21,3 +21,12 @@ type Debit @entity {
   account: String!
   amount: String!
 }
+
+type TransferEvent @entity {
+  id: ID! # event ID
+  contract: String
+  ledger: String
+  from: String
+  to: String
+  value: String
+}

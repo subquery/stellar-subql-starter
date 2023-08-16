@@ -1,9 +1,9 @@
 import { Horizon } from "stellar-sdk";
-import { Payment, Credit, Debit } from "../types";
+import { Payment, Credit, Debit, TransferEvent } from "../types";
 import { AccountCredited, AccountDebited } from "stellar-sdk/lib/types/effects";
-import { SorobanOperation, SorobanEffect} from "@subql/types-soroban";
+import { StellarOperation, StellarEffect, SorobanEvent } from "@subql/types-stellar";
 
-export async function handleOperation(op: SorobanOperation<Horizon.PaymentOperationResponse>): Promise<void> {
+export async function handleOperation(op: StellarOperation<Horizon.PaymentOperationResponse>): Promise<void> {
   logger.info(`Indexing operation ${op.id}, type: ${op.type}`)
 
   const _op = Payment.create({
@@ -17,7 +17,7 @@ export async function handleOperation(op: SorobanOperation<Horizon.PaymentOperat
   await _op.save();
 }
 
-export async function handleCredit(effect: SorobanEffect<AccountCredited>): Promise<void> {
+export async function handleCredit(effect: StellarEffect<AccountCredited>): Promise<void> {
   logger.info(`Indexing effect ${effect.id}, type: ${effect.type}`)
 
   const _effect = Credit.create({
@@ -29,7 +29,7 @@ export async function handleCredit(effect: SorobanEffect<AccountCredited>): Prom
   await _effect.save();
 }
 
-export async function handleDebit(effect: SorobanEffect<AccountDebited>): Promise<void> {
+export async function handleDebit(effect: StellarEffect<AccountDebited>): Promise<void> {
   logger.info(`Indexing effect ${effect.id}, type: ${effect.type}`)
 
   const _effect = Debit.create({
@@ -39,4 +39,18 @@ export async function handleDebit(effect: SorobanEffect<AccountDebited>): Promis
   })
 
   await _effect.save();
+}
+
+export async function handleEvent(event: SorobanEvent): Promise<void> {
+  logger.info(`New event at block ${event.ledger.sequence}`);
+  const _event = TransferEvent.create({
+    id: event.id,
+    contract: event.contractId,
+    ledger: event.ledger.sequence.toString(),
+    from: event.topic[1],
+    to: event.topic[2],
+    value: event.value.decoded
+  })
+
+  await _event.save();
 }
