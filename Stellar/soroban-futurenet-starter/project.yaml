@@ -29,7 +29,7 @@ network:
 
 dataSources:
   - kind: stellar/Runtime
-    startBlock: 270000 # This is the start block from which you begin indexing
+    startBlock: 490000 # This is the start block from which you begin indexing
     mapping:
       file: "./dist/index.js"
       handlers:
