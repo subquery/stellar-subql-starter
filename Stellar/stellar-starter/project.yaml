@@ -58,4 +58,3 @@ dataSources:
           kind: soroban/EventHandler
           topics:
             - "transfer"
-
