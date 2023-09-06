@@ -1,1 +1,1 @@
-# soroban-subql-starter
+# stellar-subql-starter
