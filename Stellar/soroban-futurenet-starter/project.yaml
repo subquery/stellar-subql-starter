@@ -33,9 +33,28 @@ dataSources:
     mapping:
       file: "./dist/index.js"
       handlers:
+        # - handler: handleBlock
+        #   kind: soroban/BlockHandler
+        # - handler: handleTransaction
+        #  kind: soroban/TransactionHandler
+        #   filter:
+        #    account: "GAKNXHJ5PCZYFIBNBWB4RCQHH6GDEO7Z334N74BOQUQCHKOURQEPMXCH"
+        - handler: handleOperation
+          kind: stellar/OperationHandler
+          filter:
+            type: "payment"
+        - handler: handleCredit
+          kind: stellar/EffectHandler
+          filter:
+            type: "account_credited"
+        - handler: handleCredit
+          kind: stellar/EffectHandler
+          filter:
+            type: "account_debited"
         - handler: handleEvent
-          kind: stellar/EventHandler
+          kind: soroban/EventHandler
           filter:
             # contractId: "" # You can optionally specify a smart contract address here
             topics:
               - "transfer" # Topic signature(s) for the events, there can be up to 4
+
