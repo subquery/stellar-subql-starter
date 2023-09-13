@@ -18,7 +18,7 @@ jobs:
         run: yarn codegen
       - name: Build
         run: yarn build
-      - name: Install subql-node-ethereum
-        run: yarn global add @subql/node-ethereum
+      - name: Install subql-node-stellar
+        run: yarn global add @subql/node-stellar
       - name: Run tests with Subquery Node
-        run: subql-node-ethereum test -f ${{ github.workspace }}
+        run: subql-node-stellar test -f ${{ github.workspace }}

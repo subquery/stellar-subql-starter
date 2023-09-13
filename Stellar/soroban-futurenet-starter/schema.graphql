@@ -49,3 +49,32 @@ type Account @entity {
   sentTransfers: [Transfer] @derivedFrom(field: "from") # These are virtual properties to help us navigate to the correct foreign key of Transfer
   recievedTransfers: [Transfer] @derivedFrom(field: "to") # These are virtual properties to help us navigate to the correct foreign key of Transfer
 }
+
+type Payment @entity {
+  id: ID!
+  txHash: String!
+  """
+  The account that payments are made from
+  """
+  from: Account!
+  """
+  The account that payments are made to
+  """
+  to: Account!
+  """
+  Amount that is transferred
+  """
+  amount: String!
+}
+
+type Credit @entity {
+  id: ID!
+  account: Account!
+  amount: String!
+}
+
+type Debit @entity {
+  id: ID!
+  account: Account!
+  amount: String!
+}

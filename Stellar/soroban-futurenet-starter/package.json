@@ -1,5 +1,5 @@
 {
-  "name": "soroban-subql-starter",
+  "name": "stellar-subql-starter",
   "version": "0.0.1",
   "description": "This project can be use as a starting point for developing your new Stellar Soroban Future Network SubQuery project",
   "main": "dist/index.js",
@@ -23,8 +23,7 @@
   "dependencies": {
     "@subql/common": "latest",
     "@subql/types-stellar": "latest",
-    "@subql/validator": "latest",
-    "assert": "^2.0.0"
+    "@subql/validator": "latest"
   },
   "devDependencies": {
     "@subql/cli": "latest",
