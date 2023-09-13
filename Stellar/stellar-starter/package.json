@@ -23,8 +23,7 @@
   "dependencies": {
     "@subql/common": "latest",
     "@subql/validator": "latest",
-    "stellar-sdk": "latest",
-    "assert": "^2.0.0"
+    "stellar-sdk": "latest"
   },
   "devDependencies": {
     "@subql/cli": "latest",
