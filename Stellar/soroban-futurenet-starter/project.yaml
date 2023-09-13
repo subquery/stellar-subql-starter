@@ -1,6 +1,6 @@
 specVersion: "1.0.0"
 
-name: "soroban-subql-starter"
+name: "stellar-subql-starter"
 version: "0.0.1"
 runner:
   node:
@@ -9,7 +9,7 @@ runner:
   query:
     name: "@subql/query"
     version: "*"
-description: "This project can be use as a starting point for developing your new Stellar Soroban Future Network SubQuery project"
+description: "This project can be use as a starting point for developing your new Stellar SubQuery project"
 repository: "https://github.com/subquery/stellar-subql-starter"
 
 schema:
@@ -20,16 +20,20 @@ network:
   # 'Public Global Stellar Network ; September 2015' for mainnet
   # 'Test SDF Future Network ; October 2022' for Future Network
   chainId: "Test SDF Future Network ; October 2022"
-  # This endpoint must be a public non-pruned archive node
+  # This Stellar endpoint must be a public non-pruned archive node
   # We recommend providing more than one endpoint for improved reliability, performance, and uptime
   # Public nodes may be rate limited, which can affect indexing speed
-  endpoint: ["https://rpc-futurenet.stellar.org:443"]
+  # When developing your project we suggest getting a private API key
+  endpoint: ["https://horizon-futurenet.stellar.org:443"]
+  # This is a specific Soroban endpoint
+  # It is only required when you are using a soroban/EventHandler
+  sorobanEndpoint: "https://rpc-futurenet.stellar.org"
   # Recommended to provide the HTTP endpoint of a full chain dictionary to speed up processing
   # dictionary: "https://gx.api.subquery.network/sq/subquery/eth-dictionary"
 
 dataSources:
   - kind: stellar/Runtime
-    startBlock: 490000 # This is the start block from which you begin indexing
+    startBlock: 400060
     mapping:
       file: "./dist/index.js"
       handlers:
