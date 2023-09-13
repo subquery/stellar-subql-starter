@@ -15,7 +15,7 @@ export async function handleOperation(
   const fromAccount = await checkAndGetAccount(op.from, op.ledger.sequence);
   const toAccount = await checkAndGetAccount(op.to, op.ledger.sequence);
 
-  const _op = Payment.create({
+  const payment = Payment.create({
     id: op.id,
     fromId: fromAccount.id,
     toId: toAccount.id,
@@ -23,7 +23,9 @@ export async function handleOperation(
     amount: op.amount,
   });
 
-  await _op.save();
+  fromAccount.lastSeenLedger = op.ledger.sequence;
+  toAccount.lastSeenLedger = op.ledger.sequence;
+  await Promise.all([fromAccount.save(), toAccount.save(), payment.save()]);
 }
 
 export async function handleCredit(
@@ -36,13 +38,14 @@ export async function handleCredit(
     effect.ledger.sequence
   );
 
-  const _effect = Credit.create({
+  const credit = Credit.create({
     id: effect.id,
     accountId: account.id,
     amount: effect.amount,
   });
 
-  await _effect.save();
+  account.lastSeenLedger = effect.ledger.sequence;
+  await Promise.all([account.save(), credit.save()]);
 }
 
 export async function handleDebit(
@@ -55,13 +58,14 @@ export async function handleDebit(
     effect.ledger.sequence
   );
 
-  const _effect = Debit.create({
+  const debit = Debit.create({
     id: effect.id,
     accountId: account.id,
     amount: effect.amount,
   });
 
-  await _effect.save();
+  account.lastSeenLedger = effect.ledger.sequence;
+  await Promise.all([account.save(), debit.save()]);
 }
 
 export async function handleEvent(event: SorobanEvent): Promise<void> {
@@ -74,15 +78,13 @@ export async function handleEvent(event: SorobanEvent): Promise<void> {
     topic: [env, from, to],
   } = event;
 
-  const ledgerNumber: number = event.ledger.sequence;
-
-  const fromAccount = await checkAndGetAccount(from, ledgerNumber);
-  const toAccount = await checkAndGetAccount(to, ledgerNumber);
+  const fromAccount = await checkAndGetAccount(from, event.ledger.sequence);
+  const toAccount = await checkAndGetAccount(to, event.ledger.sequence);
 
   // Create the new transfer entity
   const transfer = Transfer.create({
     id: event.id,
-    ledger: ledgerNumber,
+    ledger: event.ledger.sequence,
     date: new Date(event.ledgerClosedAt),
     contract: event.contractId,
     fromId: fromAccount.id,
@@ -90,9 +92,8 @@ export async function handleEvent(event: SorobanEvent): Promise<void> {
     value: BigInt(event.value.decoded!),
   });
 
-  fromAccount.lastTransferLedger = ledgerNumber;
-  toAccount.lastTransferLedger = ledgerNumber;
-
+  fromAccount.lastSeenLedger = event.ledger.sequence;
+  toAccount.lastSeenLedger = event.ledger.sequence;
   await Promise.all([fromAccount.save(), toAccount.save(), transfer.save()]);
 }
 
@@ -105,7 +106,7 @@ async function checkAndGetAccount(
     // We couldn't find the account
     account = Account.create({
       id: id.toLowerCase(),
-      firstTransferLedger: ledgerSequence,
+      firstSeenLedger: ledgerSequence,
     });
   }
   return account;

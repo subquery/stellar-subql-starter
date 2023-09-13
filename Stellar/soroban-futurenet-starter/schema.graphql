@@ -2,6 +2,25 @@
 # Add the `@index` or `@index(unique: true)` annotation after any non-key field
 # https://academy.subquery.network/build/graphql.html#indexing-by-non-primary-key-field
 
+type Account @entity {
+  """
+  id field is always required and must look like this
+  """
+  id: ID!
+  """
+  The first block on which we see a transfer involving this account
+  """
+  firstSeenLedger: Int
+  """
+  The most recent block on which we see a transfer involving this account
+  """
+  lastSeenLedger: Int
+  sentTransfers: [Transfer] @derivedFrom(field: "from") # These are virtual properties to help us navigate to the correct foreign key of Transfer
+  receivedTransfers: [Transfer] @derivedFrom(field: "to") # These are virtual properties to help us navigate to the correct foreign key of Transfer
+  sentPayments: [Payment] @derivedFrom(field: "from") # These are virtual properties to help us navigate to the correct foreign key of Payment
+  receivedPayments: [Payment] @derivedFrom(field: "to") # These are virtual properties to help us navigate to the correct foreign key of Payment
+}
+
 type Transfer @entity {
   """
   id field is always required and must look like this
@@ -31,23 +50,6 @@ type Transfer @entity {
   Value that is transferred
   """
   value: BigInt!
-}
-
-type Account @entity {
-  """
-  id field is always required and must look like this
-  """
-  id: ID!
-  """
-  The first block on which we see a transfer involving this account
-  """
-  firstTransferLedger: Int
-  """
-  The most recent block on which we see a transfer involving this account
-  """
-  lastTransferLedger: Int
-  sentTransfers: [Transfer] @derivedFrom(field: "from") # These are virtual properties to help us navigate to the correct foreign key of Transfer
-  recievedTransfers: [Transfer] @derivedFrom(field: "to") # These are virtual properties to help us navigate to the correct foreign key of Transfer
 }
 
 type Payment @entity {

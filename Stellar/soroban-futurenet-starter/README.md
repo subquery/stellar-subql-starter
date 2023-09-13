@@ -2,7 +2,7 @@
 
 [SubQuery](https://subquery.network) is a fast, flexible, and reliable open-source data indexer that provides you with custom APIs for your web3 project across all of our supported networks. To learn about how to get started with SubQuery, [visit our docs](https://academy.subquery.network).
 
-**This SubQuery project indexes all asset transfers on the Soroban Network**
+**The example project indexes all soroban transfer events on Stellar's Futurenet. It also indexes all account payments including credits and debits**
 
 ## Start
 
@@ -63,7 +63,8 @@ For this project, you can try to query with the following GraphQL code to get a 
             value
           }
         }
-        lastTransferLedger
+        firstSeenLedger
+        lastSeenLedger
       }
     }
   }

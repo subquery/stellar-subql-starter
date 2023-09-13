@@ -33,7 +33,7 @@ network:
 
 dataSources:
   - kind: stellar/Runtime
-    startBlock: 400060
+    startBlock: 420060 # Set this as a logical start block, it might be block 1 (genesis) or when your contract was deployed
     mapping:
       file: "./dist/index.js"
       handlers:
@@ -42,7 +42,7 @@ dataSources:
         # - handler: handleTransaction
         #  kind: soroban/TransactionHandler
         #   filter:
-        #    account: "GAKNXHJ5PCZYFIBNBWB4RCQHH6GDEO7Z334N74BOQUQCHKOURQEPMXCH"
+        #    account: "GAKNXHJ5PCZYFIBNBWB4RCQHH6GDEO7Z334N74BOQUQCHKOURQEPMXCH" # The address from
         - handler: handleOperation
           kind: stellar/OperationHandler
           filter:
