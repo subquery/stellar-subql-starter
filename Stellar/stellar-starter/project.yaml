@@ -1,0 +1,60 @@
+specVersion: "1.0.0"
+
+name: "stellar-subql-starter"
+version: "0.0.1"
+runner:
+  node:
+    name: "@subql/node-stellar"
+    version: "*"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: "This project can be use as a starting point for developing your new Stellar SubQuery project"
+repository: "https://github.com/subquery/stellar-subql-starter"
+
+schema:
+  file: "./schema.graphql"
+
+network:
+  # chainId is the EVM Chain ID, for Ethereum this is 1
+  # https://chainlist.org/chain/1
+  chainId: "Test SDF Future Network ; October 2022"
+  # This endpoint must be a public non-pruned archive node
+  # We recommend providing more than one endpoint for improved reliability, performance, and uptime
+  # Public nodes may be rate limited, which can affect indexing speed
+  # When developing your project we suggest getting a private API key
+  # You can get them from OnFinality for free https://app.onfinality.io
+  # https://documentation.onfinality.io/support/the-enhanced-api-service
+  endpoint: ["https://horizon-futurenet.stellar.org:443"]
+  soroban: "https://rpc-futurenet.stellar.org"
+  # Recommended to provide the HTTP endpoint of a full chain dictionary to speed up processing
+  # dictionary: "https://gx.api.subquery.network/sq/subquery/eth-dictionary"
+
+dataSources:
+  - kind: stellar/Runtime
+    startBlock: 400060
+    mapping:
+      file: "./dist/index.js"
+      handlers:
+        # - handler: handleBlock
+        #   kind: soroban/BlockHandler
+        # - handler: handleTransaction
+        #  kind: soroban/TransactionHandler
+        #   filter:
+        #    account: "GAKNXHJ5PCZYFIBNBWB4RCQHH6GDEO7Z334N74BOQUQCHKOURQEPMXCH"
+        - handler: handleOperation
+          kind: stellar/OperationHandler
+          filter:
+            type: "payment"
+        - handler: handleCredit
+          kind: stellar/EffectHandler
+          filter:
+            type: "account_credited"
+        - handler: handleCredit
+          kind: stellar/EffectHandler
+          filter:
+            type: "account_debited"
+        - handler: handleEvent
+          kind: soroban/EventHandler
+          topics:
+            - "transfer"
