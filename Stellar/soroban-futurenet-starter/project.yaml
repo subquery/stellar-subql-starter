@@ -51,7 +51,7 @@ dataSources:
           kind: stellar/EffectHandler
           filter:
             type: "account_credited"
-        - handler: handleCredit
+        - handler: handleDebit
           kind: stellar/EffectHandler
           filter:
             type: "account_debited"
