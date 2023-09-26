@@ -28,7 +28,7 @@ network:
   endpoint: ["https://horizon-testnet.stellar.org"]
   # This is a specific Soroban endpoint
   # It is only required when you are using a soroban/EventHandler
-  sorobanEndpoint: "https://soroban-testnet.stellar.org:443"
+  sorobanEndpoint: "https://soroban-testnet.stellar.org"
   # Recommended to provide the HTTP endpoint of a full chain dictionary to speed up processing
   # dictionary: "https://gx.api.subquery.network/sq/subquery/eth-dictionary"
 
