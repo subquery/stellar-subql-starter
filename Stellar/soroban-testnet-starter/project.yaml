@@ -25,16 +25,16 @@ network:
   # We recommend providing more than one endpoint for improved reliability, performance, and uptime
   # Public nodes may be rate limited, which can affect indexing speed
   # When developing your project we suggest getting a private API key
-  endpoint: ["https://soroban-testnet.stellar.org:443"]
+  endpoint: ["https://horizon-testnet.stellar.org"]
   # This is a specific Soroban endpoint
   # It is only required when you are using a soroban/EventHandler
-  sorobanEndpoint: "https://rpc-testnet.stellar.org"
+  sorobanEndpoint: "https://soroban-testnet.stellar.org:443"
   # Recommended to provide the HTTP endpoint of a full chain dictionary to speed up processing
   # dictionary: "https://gx.api.subquery.network/sq/subquery/eth-dictionary"
 
 dataSources:
   - kind: stellar/Runtime
-    startBlock: 1 # Set this as a logical start block, it might be block 1 (genesis) or when your contract was deployed
+    startBlock: 1700000 # Set this as a logical start block, it might be block 1 (genesis) or when your contract was deployed
     mapping:
       file: "./dist/index.js"
       handlers:
