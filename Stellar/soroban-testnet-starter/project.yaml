@@ -1,4 +1,4 @@
-pecVersion: "1.0.0"
+specVersion: "1.0.0"
 
 name: "soroban-testnet-starter"
 version: "0.0.1"
