@@ -32,10 +32,12 @@ const project: StellarProject = {
       'Public Global Stellar Network ; September 2015' for mainnet
       'Test SDF Future Network ; October 2022' for Future Network */
     chainId: "Test SDF Network ; September 2015",
-    /* This Stellar endpoint must be a public non-pruned archive node
-      We recommend providing more than one endpoint for improved reliability, performance, and uptime
-      Public nodes may be rate limited, which can affect indexing speed
-      When developing your project we suggest getting a private API key */
+    /**
+     * These endpoint(s) should be public non-pruned archive node
+     * We recommend providing more than one endpoint for improved reliability, performance, and uptime
+     * Public nodes may be rate limited, which can affect indexing speed
+     * When developing your project we suggest getting a private API key
+     */
     endpoint: ["https://horizon-testnet.stellar.org"],
     /* This is a specific Soroban endpoint
       It is only required when you are using a soroban/EventHandler */
