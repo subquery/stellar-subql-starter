@@ -70,6 +70,60 @@ For this project, you can try to query with the following GraphQL code to get a 
   }
 }
 ```
+Results:
+
+```
+{
+  "data": {
+    "query": {
+      "transfers": {
+        "totalCount": 0,
+        "nodes": []
+      },
+      "accounts": {
+        "nodes": [
+          {
+            "id": "gbtbdklzbabdgnpvdygchqzxqxkjfu73ayhls44j7u26ti6lzvlzfg5a",
+            "sentTransfers": {
+              "totalCount": 0,
+              "nodes": []
+            },
+            "firstSeenLedger": 1700000,
+            "lastSeenLedger": 1700000
+          },
+          {
+            "id": "gdea4efymx2vcx7hduurwvuy6de36qihe6faouhuzaldgul4ooq5euvu",
+            "sentTransfers": {
+              "totalCount": 0,
+              "nodes": []
+            },
+            "firstSeenLedger": 1700000,
+            "lastSeenLedger": 1700000
+          },
+          {
+            "id": "gcbwgcat2nhokpnr2toy6o3qdky22lzzeydwh4azhdyyl57qfu53ugzr",
+            "sentTransfers": {
+              "totalCount": 0,
+              "nodes": []
+            },
+            "firstSeenLedger": 1700000,
+            "lastSeenLedger": 1700000
+          },
+          {
+            "id": "gb7yga2xmamr6wqb2z5c4l6s2imudrqzu7zxdpr4df2dewcxpxhmzjy5",
+            "sentTransfers": {
+              "totalCount": 0,
+              "nodes": []
+            },
+            "firstSeenLedger": 1700000,
+            "lastSeenLedger": 1700000
+          }
+        ]
+      }
+    }
+  }
+}
+```
 
 You can explore the different possible queries and entities to help you with GraphQL using the documentation draw on the right.
 
