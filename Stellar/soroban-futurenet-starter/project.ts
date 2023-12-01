@@ -45,7 +45,7 @@ const project: StellarProject = {
   dataSources: [
     {
       kind: StellarDatasourceKind.Runtime,
-      startBlock: 420060, // Set this as a logical start block, it might be block 1 (genesis) or when your contract was deployed
+      startBlock: 49260759, // Set this as a logical start block, it might be block 1 (genesis) or when your contract was deployed
       mapping: {
         file: "./dist/index.js",
         handlers: [
