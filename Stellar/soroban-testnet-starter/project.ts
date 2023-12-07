@@ -37,13 +37,13 @@ const project: StellarProject = {
      * We recommend providing more than one endpoint for improved reliability, performance, and uptime
      * Public nodes may be rate limited, which can affect indexing speed
      * When developing your project we suggest getting a private API key
+     * If you use a rate limited endpoint, adjust the --batch-size and --workers parameters
+     * These settings can be found in your docker-compose.yaml, they will slow indexing but prevent your project being rate limited
      */
     endpoint: ["https://horizon-testnet.stellar.org"],
     /* This is a specific Soroban endpoint
       It is only required when you are using a soroban/EventHandler */
     sorobanEndpoint: "https://soroban-testnet.stellar.org",
-    /* Recommended to provide the HTTP endpoint of a full chain dictionary to speed up processing
-      dictionary: "https://gx.api.subquery.network/sq/subquery/eth-dictionary" */
   },
   dataSources: [
     {
