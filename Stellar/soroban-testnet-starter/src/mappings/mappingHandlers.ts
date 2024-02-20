@@ -4,11 +4,11 @@ import {
   StellarEffect,
   SorobanEvent,
 } from "@subql/types-stellar";
-import { AccountCredited, AccountDebited } from "stellar-sdk/lib/types/effects";
+import { AccountCredited, AccountDebited } from "stellar-sdk/lib/horizon/types/effects";
 import { Horizon } from "stellar-sdk";
 
 export async function handleOperation(
-  op: StellarOperation<Horizon.PaymentOperationResponse>
+  op: StellarOperation<Horizon.HorizonApi.PaymentOperationResponse>
 ): Promise<void> {
   logger.info(`Indexing operation ${op.id}, type: ${op.type}`);
 
@@ -78,15 +78,20 @@ export async function handleEvent(event: SorobanEvent): Promise<void> {
     topic: [env, from, to],
   } = event;
 
-  const fromAccount = await checkAndGetAccount(from, event.ledger.sequence);
-  const toAccount = await checkAndGetAccount(to, event.ledger.sequence);
+  logger.debug(`from account: ${from.address().accountId().value().toString()}`)
+  logger.debug(`to account: ${to.address().accountId().value().toString()}`)
+
+  const fromAccount = await checkAndGetAccount(from.address().accountId().value().toString(), event.ledger.sequence);
+  const toAccount = await checkAndGetAccount(to.address().accountId().value().toString(), event.ledger.sequence);
+
+
 
   // Create the new transfer entity
   const transfer = Transfer.create({
     id: event.id,
     ledger: event.ledger.sequence,
     date: new Date(event.ledgerClosedAt),
-    contract: event.contractId,
+    contract: event.contractId?.contractId().toString()!,
     fromId: fromAccount.id,
     toId: toAccount.id,
     value: BigInt(event.value.decoded!),

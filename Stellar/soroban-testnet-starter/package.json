@@ -22,8 +22,7 @@
   "license": "MIT",
   "dependencies": {
     "@subql/common": "latest",
-    "@subql/types-stellar": "latest",
-    "@subql/validator": "latest"
+    "@subql/types-stellar": "latest"
   },
   "devDependencies": {
     "@subql/cli": "latest",
