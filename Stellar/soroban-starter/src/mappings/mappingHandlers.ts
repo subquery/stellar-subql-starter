@@ -5,10 +5,12 @@ import {
   SorobanEvent,
 } from "@subql/types-stellar";
 import { AccountCredited, AccountDebited } from "stellar-sdk/lib/horizon/types/effects";
-import { Horizon } from "stellar-sdk";
+import { Horizon, } from "stellar-sdk";
+import { Address,xdr,} from 'soroban-client';
+import {logger} from "ethers";
 
 export async function handleOperation(
-  op: StellarOperation<Horizon.HorizonApi.PaymentOperationResponse>
+    op: StellarOperation<Horizon.HorizonApi.PaymentOperationResponse>
 ): Promise<void> {
   logger.info(`Indexing operation ${op.id}, type: ${op.type}`);
 
@@ -29,13 +31,13 @@ export async function handleOperation(
 }
 
 export async function handleCredit(
-  effect: StellarEffect<AccountCredited>
+    effect: StellarEffect<AccountCredited>
 ): Promise<void> {
   logger.info(`Indexing effect ${effect.id}, type: ${effect.type}`);
 
   const account = await checkAndGetAccount(
-    effect.account,
-    effect.ledger.sequence
+      effect.account,
+      effect.ledger.sequence
   );
 
   const credit = Credit.create({
@@ -49,13 +51,13 @@ export async function handleCredit(
 }
 
 export async function handleDebit(
-  effect: StellarEffect<AccountDebited>
+    effect: StellarEffect<AccountDebited>
 ): Promise<void> {
   logger.info(`Indexing effect ${effect.id}, type: ${effect.type}`);
 
   const account = await checkAndGetAccount(
-    effect.account,
-    effect.ledger.sequence
+      effect.account,
+      effect.ledger.sequence
   );
 
   const debit = Debit.create({
@@ -69,22 +71,24 @@ export async function handleDebit(
 }
 
 export async function handleEvent(event: SorobanEvent): Promise<void> {
-  logger.info(`New transfer event found at block ${event.ledger}`);
+  logger.info(`New transfer event found at block ${event.ledger.sequence.toString()}`);
 
   // Get data from the event
   // The transfer event has the following payload \[env, from, to\]
   // logger.info(JSON.stringify(event));
   const {
-    topic: [env, from, to],
+    topic: [env, from, to]
   } = event;
 
-  logger.debug(`from account: ${from.address().accountId().value().toString()}`)
-  logger.debug(`to account: ${to.address().accountId().value().toString()}`)
+  try {
+    decodeAddress(from)
+    decodeAddress(to)
+  }catch (e) {
+    logger.info(`decode address failed`)
+  }
 
-  const fromAccount = await checkAndGetAccount(from.address().accountId().value().toString(), event.ledger.sequence);
-  const toAccount = await checkAndGetAccount(to.address().accountId().value().toString(), event.ledger.sequence);
-
-
+  const fromAccount = await checkAndGetAccount(decodeAddress(from), event.ledger.sequence);
+  const toAccount = await checkAndGetAccount(decodeAddress(to), event.ledger.sequence);
 
   // Create the new transfer entity
   const transfer = Transfer.create({
@@ -103,8 +107,8 @@ export async function handleEvent(event: SorobanEvent): Promise<void> {
 }
 
 async function checkAndGetAccount(
-  id: string,
-  ledgerSequence: number
+    id: string,
+    ledgerSequence: number
 ): Promise<Account> {
   let account = await Account.get(id.toLowerCase());
   if (!account) {
@@ -115,4 +119,16 @@ async function checkAndGetAccount(
     });
   }
   return account;
+}
+
+// scValToNative not works, temp solution
+function decodeAddress(scVal:xdr.ScVal):string{
+  try {
+    return Address.account(scVal.address().accountId().ed25519()).toString();
+  }catch (e) {
+    return Address.contract(
+        scVal.address().contractId()).toString();
+  }
+
+
 }
