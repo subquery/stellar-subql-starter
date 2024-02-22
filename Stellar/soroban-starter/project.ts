@@ -8,7 +8,7 @@ import { Horizon } from "stellar-sdk";
 /* This is your project configuration */
 const project: StellarProject = {
   specVersion: "1.0.0",
-  name: "soroban-testnet-starter",
+  name: "soroban-starter",
   version: "0.0.1",
   runner: {
     node: {
@@ -21,7 +21,7 @@ const project: StellarProject = {
     },
   },
   description:
-    "This project can be use as a starting point for developing your new Stellar SubQuery project (testnet)",
+    "This project can be use as a starting point for developing your new Stellar SubQuery project (mainnet)",
   repository: "https://github.com/subquery/stellar-subql-starter",
   schema: {
     file: "./schema.graphql",
@@ -31,7 +31,7 @@ const project: StellarProject = {
       'Test SDF Network ; September 2015' for testnet
       'Public Global Stellar Network ; September 2015' for mainnet
       'Test SDF Future Network ; October 2022' for Future Network */
-    chainId: "Test SDF Network ; September 2015",
+    chainId: "Public Global Stellar Network ; September 2015",
     /**
      * These endpoint(s) should be public non-pruned archive node
      * We recommend providing more than one endpoint for improved reliability, performance, and uptime
@@ -39,17 +39,18 @@ const project: StellarProject = {
      * When developing your project we suggest getting a private API key
      * If you use a rate limited endpoint, adjust the --batch-size and --workers parameters
      * These settings can be found in your docker-compose.yaml, they will slow indexing but prevent your project being rate limited
+     * You can find RPC endpoints for Stellar here https://soroban.stellar.org/docs/reference/rpc-list
      */
-    endpoint: ["https://horizon-testnet.stellar.org"],
+    endpoint: ["add your endpoint here"],
     /* This is a specific Soroban endpoint
       It is only required when you are using a soroban/EventHandler */
-    sorobanEndpoint: "https://soroban-testnet.stellar.org",
+    sorobanEndpoint: "add your soroban endpoint here",
   },
   dataSources: [
     {
       kind: StellarDatasourceKind.Runtime,
       /* Set this as a logical start block, it might be block 1 (genesis) or when your contract was deployed */
-      startBlock: 228206,
+      startBlock: 50460000,
       mapping: {
         file: "./dist/index.js",
         handlers: [
