@@ -4,11 +4,16 @@ import {
   StellarEffect,
   SorobanEvent,
 } from "@subql/types-stellar";
-import { AccountCredited, AccountDebited } from "stellar-sdk/lib/types/effects";
+import {
+  AccountCredited,
+  AccountDebited,
+} from "stellar-sdk/lib/horizon/types/effects";
 import { Horizon } from "stellar-sdk";
+import { Address, xdr } from "soroban-client";
+import { logger } from "ethers";
 
 export async function handleOperation(
-  op: StellarOperation<Horizon.PaymentOperationResponse>
+  op: StellarOperation<Horizon.HorizonApi.PaymentOperationResponse>
 ): Promise<void> {
   logger.info(`Indexing operation ${op.id}, type: ${op.type}`);
 
@@ -69,7 +74,9 @@ export async function handleDebit(
 }
 
 export async function handleEvent(event: SorobanEvent): Promise<void> {
-  logger.info(`New transfer event found at block ${event.ledger}`);
+  logger.info(
+    `New transfer event found at block ${event.ledger.sequence.toString()}`
+  );
 
   // Get data from the event
   // The transfer event has the following payload \[env, from, to\]
@@ -78,15 +85,28 @@ export async function handleEvent(event: SorobanEvent): Promise<void> {
     topic: [env, from, to],
   } = event;
 
-  const fromAccount = await checkAndGetAccount(from, event.ledger.sequence);
-  const toAccount = await checkAndGetAccount(to, event.ledger.sequence);
+  try {
+    decodeAddress(from);
+    decodeAddress(to);
+  } catch (e) {
+    logger.info(`decode address failed`);
+  }
+
+  const fromAccount = await checkAndGetAccount(
+    decodeAddress(from),
+    event.ledger.sequence
+  );
+  const toAccount = await checkAndGetAccount(
+    decodeAddress(to),
+    event.ledger.sequence
+  );
 
   // Create the new transfer entity
   const transfer = Transfer.create({
     id: event.id,
     ledger: event.ledger.sequence,
     date: new Date(event.ledgerClosedAt),
-    contract: event.contractId,
+    contract: event.contractId?.contractId().toString()!,
     fromId: fromAccount.id,
     toId: toAccount.id,
     value: BigInt(event.value.decoded!),
@@ -110,4 +130,13 @@ async function checkAndGetAccount(
     });
   }
   return account;
+}
+
+// scValToNative not works, temp solution
+function decodeAddress(scVal: xdr.ScVal): string {
+  try {
+    return Address.account(scVal.address().accountId().ed25519()).toString();
+  } catch (e) {
+    return Address.contract(scVal.address().contractId()).toString();
+  }
 }

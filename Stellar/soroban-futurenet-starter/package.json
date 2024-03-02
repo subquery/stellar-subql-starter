@@ -1,7 +1,7 @@
 {
-  "name": "soroban-futurenet-starter",
+  "name": "soroban-testnet-starter",
   "version": "0.0.1",
-  "description": "This project can be use as a starting point for developing your new Stellar Soroban Future Network SubQuery project",
+  "description": "This project can be use as a starting point for developing your new Stellar Soroban Test Network SubQuery project",
   "main": "dist/index.js",
   "scripts": {
     "build": "subql build",
@@ -22,13 +22,12 @@
   "license": "MIT",
   "dependencies": {
     "@subql/common": "latest",
-    "@subql/types-stellar": "latest",
-    "stellar-sdk": "^10.4.1"
+    "@subql/types-stellar": "latest"
   },
   "devDependencies": {
     "@subql/cli": "latest",
-    "@subql/testing": "latest",
     "@subql/types": "latest",
+    "@subql/testing": "latest",
     "ethers": "^5.7.2",
     "typescript": "^5.2.2"
   }

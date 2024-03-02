@@ -45,7 +45,7 @@ const project: StellarProject = {
   dataSources: [
     {
       kind: StellarDatasourceKind.Runtime,
-      startBlock: 49260759, // Set this as a logical start block, it might be block 1 (genesis) or when your contract was deployed
+      startBlock: 599994, // Set this as a logical start block, it might be block 1 (genesis) or when your contract was deployed
       mapping: {
         file: "./dist/index.js",
         handlers: [
@@ -53,7 +53,7 @@ const project: StellarProject = {
             handler: "handleOperation",
             kind: StellarHandlerKind.Operation,
             filter: {
-              type: Horizon.OperationResponseType.payment,
+              type: Horizon.HorizonApi.OperationResponseType.payment,
             },
           },
           {
