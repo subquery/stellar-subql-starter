@@ -45,38 +45,19 @@ const project: StellarProject = {
   dataSources: [
     {
       kind: StellarDatasourceKind.Runtime,
-      startBlock: 599994, // Set this as a logical start block, it might be block 1 (genesis) or when your contract was deployed
+      startBlock: 831474,
       mapping: {
         file: "./dist/index.js",
         handlers: [
           {
-            handler: "handleOperation",
-            kind: StellarHandlerKind.Operation,
-            filter: {
-              type: Horizon.HorizonApi.OperationResponseType.payment,
-            },
-          },
-          {
-            handler: "handleCredit",
-            kind: StellarHandlerKind.Effects,
-            filter: {
-              type: "account_credited",
-            },
-          },
-          {
-            handler: "handleDebit",
-            kind: StellarHandlerKind.Effects,
-            filter: {
-              type: "account_debited",
-            },
-          },
-          {
             handler: "handleEvent",
             kind: StellarHandlerKind.Event,
             filter: {
-              // contractId: "" // You can optionally specify a smart contract address here
-              topics: ["transfer"], // Topic signature(s) for the events, there can be up to 4
-            },
+              topics: [
+                "COUNT", // Topic signature(s) for the events, there can be up to 4
+              ],
+              contractId: "CAQFKAS47DF6RBKABRLDZ5O4XJIH2DQ3RMNHFPOSGLFI6KMSSIUIGQJ6"
+            }
           },
         ],
       },
