@@ -10,7 +10,6 @@ import {
 } from "stellar-sdk/lib/horizon/types/effects";
 import { Horizon } from "stellar-sdk";
 import { Address, xdr } from "soroban-client";
-import { logger } from "ethers";
 
 export async function handleOperation(
   op: StellarOperation<Horizon.HorizonApi.PaymentOperationResponse>
