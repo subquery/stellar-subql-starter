@@ -41,10 +41,10 @@ const project: StellarProject = {
      * These settings can be found in your docker-compose.yaml, they will slow indexing but prevent your project being rate limited
      * You can find RPC endpoints for Stellar here https://soroban.stellar.org/docs/reference/rpc-list
      */
-    endpoint: ["add your endpoint here"],
+    endpoint: ["https://horizon.stellar.org/"],
     /* This is a specific Soroban endpoint
       It is only required when you are using a soroban/EventHandler */
-    sorobanEndpoint: "add your soroban endpoint here",
+    sorobanEndpoint: "https://soroban-rpc.mainnet.stellar.gateway.fm",
   },
   dataSources: [
     {
