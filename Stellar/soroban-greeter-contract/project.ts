@@ -56,8 +56,9 @@ const project: StellarProject = {
               topics: [
                 "COUNT", // Topic signature(s) for the events, there can be up to 4
               ],
-              contractId: "CAQFKAS47DF6RBKABRLDZ5O4XJIH2DQ3RMNHFPOSGLFI6KMSSIUIGQJ6"
-            }
+              contractId:
+                "CAQFKAS47DF6RBKABRLDZ5O4XJIH2DQ3RMNHFPOSGLFI6KMSSIUIGQJ6",
+            },
           },
         ],
       },

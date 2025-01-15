@@ -3,7 +3,7 @@ import {
   StellarHandlerKind,
   StellarProject,
 } from "@subql/types-stellar";
-import { Horizon } from "stellar-sdk";
+import { Horizon } from "@stellar/stellar-sdk";
 
 /* This is your project configuration */
 const project: StellarProject = {
