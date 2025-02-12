@@ -8,8 +8,7 @@ import {
   AccountCredited,
   AccountDebited,
 } from "@stellar/stellar-sdk/lib/horizon/types/effects";
-import { Horizon } from "@stellar/stellar-sdk";
-import { Address, xdr } from "soroban-client";
+import { Horizon, Address, xdr } from "@stellar/stellar-sdk";
 
 export async function handleOperation(
   op: StellarOperation<Horizon.HorizonApi.PaymentOperationResponse>
