@@ -108,7 +108,7 @@ export async function handleEvent(event: SorobanEvent): Promise<void> {
     contract: event.contractId?.contractId().toString()!,
     fromId: fromAccount.id,
     toId: toAccount.id,
-    value: BigInt(event.value.decoded!),
+    value: BigInt(event.value.i64().toString()),
   });
 
   fromAccount.lastSeenLedger = event.ledger!.sequence;
