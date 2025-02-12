@@ -74,7 +74,7 @@ export async function handleDebit(
 
 export async function handleEvent(event: SorobanEvent): Promise<void> {
   logger.info(
-    `New transfer event found at block ${event.ledger.sequence.toString()}`
+    `New transfer event found at block ${event.ledger!.sequence.toString()}`
   );
 
   // Get data from the event
@@ -93,17 +93,17 @@ export async function handleEvent(event: SorobanEvent): Promise<void> {
 
   const fromAccount = await checkAndGetAccount(
     decodeAddress(from),
-    event.ledger.sequence
+    event.ledger!.sequence
   );
   const toAccount = await checkAndGetAccount(
     decodeAddress(to),
-    event.ledger.sequence
+    event.ledger!.sequence
   );
 
   // Create the new transfer entity
   const transfer = Transfer.create({
     id: event.id,
-    ledger: event.ledger.sequence,
+    ledger: event.ledger!.sequence,
     date: new Date(event.ledgerClosedAt),
     contract: event.contractId?.contractId().toString()!,
     fromId: fromAccount.id,
@@ -111,8 +111,8 @@ export async function handleEvent(event: SorobanEvent): Promise<void> {
     value: BigInt(event.value.decoded!),
   });
 
-  fromAccount.lastSeenLedger = event.ledger.sequence;
-  toAccount.lastSeenLedger = event.ledger.sequence;
+  fromAccount.lastSeenLedger = event.ledger!.sequence;
+  toAccount.lastSeenLedger = event.ledger!.sequence;
   await Promise.all([fromAccount.save(), toAccount.save(), transfer.save()]);
 }
 
