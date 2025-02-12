@@ -7,17 +7,17 @@ import {
 import {
   AccountCredited,
   AccountDebited,
-} from "stellar-sdk/lib/horizon/types/effects";
-import { Horizon } from "stellar-sdk";
+} from "@stellar/stellar-sdk/lib/horizon/types/effects";
+import { Horizon } from "@stellar/stellar-sdk";
 import { Address, xdr } from "soroban-client";
 
 export async function handleOperation(
-  op: StellarOperation<Horizon.HorizonApi.PaymentOperationResponse>,
+  op: StellarOperation<Horizon.HorizonApi.PaymentOperationResponse>
 ): Promise<void> {
   logger.info(`Indexing operation ${op.id}, type: ${op.type}`);
 
-  const fromAccount = await checkAndGetAccount(op.from, op.ledger.sequence);
-  const toAccount = await checkAndGetAccount(op.to, op.ledger.sequence);
+  const fromAccount = await checkAndGetAccount(op.from, op.ledger!.sequence);
+  const toAccount = await checkAndGetAccount(op.to, op.ledger!.sequence);
 
   const payment = Payment.create({
     id: op.id,
@@ -27,19 +27,19 @@ export async function handleOperation(
     amount: op.amount,
   });
 
-  fromAccount.lastSeenLedger = op.ledger.sequence;
-  toAccount.lastSeenLedger = op.ledger.sequence;
+  fromAccount.lastSeenLedger = op.ledger!.sequence;
+  toAccount.lastSeenLedger = op.ledger!.sequence;
   await Promise.all([fromAccount.save(), toAccount.save(), payment.save()]);
 }
 
 export async function handleCredit(
-  effect: StellarEffect<AccountCredited>,
+  effect: StellarEffect<AccountCredited>
 ): Promise<void> {
   logger.info(`Indexing effect ${effect.id}, type: ${effect.type}`);
 
   const account = await checkAndGetAccount(
     effect.account,
-    effect.ledger.sequence,
+    effect.ledger!.sequence
   );
 
   const credit = Credit.create({
@@ -48,18 +48,18 @@ export async function handleCredit(
     amount: effect.amount,
   });
 
-  account.lastSeenLedger = effect.ledger.sequence;
+  account.lastSeenLedger = effect.ledger!.sequence;
   await Promise.all([account.save(), credit.save()]);
 }
 
 export async function handleDebit(
-  effect: StellarEffect<AccountDebited>,
+  effect: StellarEffect<AccountDebited>
 ): Promise<void> {
   logger.info(`Indexing effect ${effect.id}, type: ${effect.type}`);
 
   const account = await checkAndGetAccount(
     effect.account,
-    effect.ledger.sequence,
+    effect.ledger!.sequence
   );
 
   const debit = Debit.create({
@@ -68,13 +68,13 @@ export async function handleDebit(
     amount: effect.amount,
   });
 
-  account.lastSeenLedger = effect.ledger.sequence;
+  account.lastSeenLedger = effect.ledger!.sequence;
   await Promise.all([account.save(), debit.save()]);
 }
 
 export async function handleEvent(event: SorobanEvent): Promise<void> {
   logger.info(
-    `New transfer event found at block ${event.ledger.sequence.toString()}`,
+    `New transfer event found at block ${event.ledger!.sequence.toString()}`
   );
 
   // Get data from the event
@@ -93,32 +93,32 @@ export async function handleEvent(event: SorobanEvent): Promise<void> {
 
   const fromAccount = await checkAndGetAccount(
     decodeAddress(from),
-    event.ledger.sequence,
+    event.ledger!.sequence
   );
   const toAccount = await checkAndGetAccount(
     decodeAddress(to),
-    event.ledger.sequence,
+    event.ledger!.sequence
   );
 
   // Create the new transfer entity
   const transfer = Transfer.create({
     id: event.id,
-    ledger: event.ledger.sequence,
+    ledger: event.ledger!.sequence,
     date: new Date(event.ledgerClosedAt),
     contract: event.contractId?.contractId().toString()!,
     fromId: fromAccount.id,
     toId: toAccount.id,
-    value: BigInt(event.value.decoded!),
+    value: BigInt(event.value.i64().toString()),
   });
 
-  fromAccount.lastSeenLedger = event.ledger.sequence;
-  toAccount.lastSeenLedger = event.ledger.sequence;
+  fromAccount.lastSeenLedger = event.ledger!.sequence;
+  toAccount.lastSeenLedger = event.ledger!.sequence;
   await Promise.all([fromAccount.save(), toAccount.save(), transfer.save()]);
 }
 
 async function checkAndGetAccount(
   id: string,
-  ledgerSequence: number,
+  ledgerSequence: number
 ): Promise<Account> {
   let account = await Account.get(id.toLowerCase());
   if (!account) {

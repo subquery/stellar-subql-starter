@@ -3,7 +3,7 @@ import {
   StellarHandlerKind,
   StellarProject,
 } from "@subql/types-stellar";
-import { Horizon } from "stellar-sdk";
+import { Horizon } from "@stellar/stellar-sdk";
 const project: StellarProject = {
   specVersion: "1.0.0",
   name: "soroban-futurenet-starter",
