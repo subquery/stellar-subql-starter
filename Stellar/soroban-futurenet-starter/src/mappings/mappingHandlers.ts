@@ -7,7 +7,7 @@ import {
 import {
   AccountCredited,
   AccountDebited,
-} from "stellar-sdk/lib/horizon/types/effects";
+} from "@stellar/stellar-sdk/lib/horizon/types/effects";
 import { Horizon } from "@stellar/stellar-sdk";
 import { Address, xdr } from "soroban-client";
 
