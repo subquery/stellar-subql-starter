@@ -35,7 +35,6 @@ services:
       - ${SUB_COMMAND:-} # set SUB_COMMAND env variable to "test" to run tests
       - -f=/app
       - --db-schema=app
-      - --unsafe
       - --workers=1 # The more the faster
       - --batch-size=5 # The higher the faster, set low to avoid rate limit on SDF endpoint
     healthcheck:
