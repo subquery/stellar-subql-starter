@@ -16,8 +16,8 @@ export async function handleOperation(
 ): Promise<void> {
   logger.info(`Indexing operation ${op.id}, type: ${op.type}`);
 
-  const fromAccount = await checkAndGetAccount(op.from, op.ledger.sequence);
-  const toAccount = await checkAndGetAccount(op.to, op.ledger.sequence);
+  const fromAccount = await checkAndGetAccount(op.from, op.ledger!.sequence);
+  const toAccount = await checkAndGetAccount(op.to, op.ledger!.sequence);
 
   const payment = Payment.create({
     id: op.id,
@@ -27,8 +27,8 @@ export async function handleOperation(
     amount: op.amount,
   });
 
-  fromAccount.lastSeenLedger = op.ledger.sequence;
-  toAccount.lastSeenLedger = op.ledger.sequence;
+  fromAccount.lastSeenLedger = op.ledger!.sequence;
+  toAccount.lastSeenLedger = op.ledger!.sequence;
   await Promise.all([fromAccount.save(), toAccount.save(), payment.save()]);
 }
 
