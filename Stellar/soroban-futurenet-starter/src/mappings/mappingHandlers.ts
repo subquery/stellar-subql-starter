@@ -39,7 +39,7 @@ export async function handleCredit(
 
   const account = await checkAndGetAccount(
     effect.account,
-    effect.ledger.sequence
+    effect.ledger!.sequence
   );
 
   const credit = Credit.create({
@@ -48,7 +48,7 @@ export async function handleCredit(
     amount: effect.amount,
   });
 
-  account.lastSeenLedger = effect.ledger.sequence;
+  account.lastSeenLedger = effect.ledger!.sequence;
   await Promise.all([account.save(), credit.save()]);
 }
 
@@ -59,7 +59,7 @@ export async function handleDebit(
 
   const account = await checkAndGetAccount(
     effect.account,
-    effect.ledger.sequence
+    effect.ledger!.sequence
   );
 
   const debit = Debit.create({
@@ -68,7 +68,7 @@ export async function handleDebit(
     amount: effect.amount,
   });
 
-  account.lastSeenLedger = effect.ledger.sequence;
+  account.lastSeenLedger = effect.ledger!.sequence;
   await Promise.all([account.save(), debit.save()]);
 }
 
