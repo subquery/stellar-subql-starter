@@ -8,8 +8,8 @@ import {
   AccountCredited,
   AccountDebited,
 } from "@stellar/stellar-sdk/lib/horizon/types/effects";
-import { Horizon } from "@stellar/stellar-sdk";
-import { Address, xdr } from "soroban-client";
+import type { Horizon, xdr } from "@stellar/stellar-sdk";
+import { Address } from "@stellar/stellar-base";
 
 export async function handleOperation(
   op: StellarOperation<Horizon.HorizonApi.PaymentOperationResponse>,
@@ -39,7 +39,7 @@ export async function handleCredit(
 
   const account = await checkAndGetAccount(
     effect.account,
-    effect.ledger!.sequence
+    effect.ledger!.sequence,
   );
 
   const credit = Credit.create({
@@ -59,7 +59,7 @@ export async function handleDebit(
 
   const account = await checkAndGetAccount(
     effect.account,
-    effect.ledger!.sequence
+    effect.ledger!.sequence,
   );
 
   const debit = Debit.create({
@@ -74,7 +74,7 @@ export async function handleDebit(
 
 export async function handleEvent(event: SorobanEvent): Promise<void> {
   logger.info(
-    `New transfer event found at block ${event.ledger!.sequence.toString()}`
+    `New transfer event found at block ${event.ledger!.sequence.toString()}`,
   );
 
   // Get data from the event
@@ -93,11 +93,11 @@ export async function handleEvent(event: SorobanEvent): Promise<void> {
 
   const fromAccount = await checkAndGetAccount(
     decodeAddress(from),
-    event.ledger!.sequence
+    event.ledger!.sequence,
   );
   const toAccount = await checkAndGetAccount(
     decodeAddress(to),
-    event.ledger!.sequence
+    event.ledger!.sequence,
   );
 
   // Create the new transfer entity

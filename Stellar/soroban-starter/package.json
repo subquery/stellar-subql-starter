@@ -22,13 +22,12 @@
   "license": "MIT",
   "dependencies": {
     "@subql/common": "latest",
-    "@subql/types-stellar": "latest",
-    "soroban-client": "^1.0.1"
+    "@subql/types-stellar": "latest"
   },
   "devDependencies": {
     "@subql/cli": "latest",
     "@subql/testing": "latest",
     "@subql/types": "latest",
-    "typescript": "^5.2.2"
+    "typescript": "latest"
   }
 }

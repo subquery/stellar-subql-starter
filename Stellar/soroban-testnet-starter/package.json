@@ -26,8 +26,8 @@
   },
   "devDependencies": {
     "@subql/cli": "latest",
-    "@subql/types": "latest",
     "@subql/testing": "latest",
+    "@subql/types": "latest",
     "typescript": "latest"
   }
 }
