@@ -9,7 +9,7 @@ import {
   AccountDebited,
 } from "@stellar/stellar-sdk/lib/horizon/types/effects";
 import type { Horizon, xdr } from "@stellar/stellar-sdk";
-import { Address } from "@stellar/stellar-base";
+import { Address, scValToBigInt } from "@stellar/stellar-base";
 
 export async function handleOperation(
   op: StellarOperation<Horizon.HorizonApi.PaymentOperationResponse>,
@@ -108,7 +108,7 @@ export async function handleEvent(event: SorobanEvent): Promise<void> {
     contract: event.contractId?.contractId().toString()!,
     fromId: fromAccount.id,
     toId: toAccount.id,
-    value: BigInt(event.value.i64().toString()),
+    value: scValToBigInt(event.value),
   });
 
   fromAccount.lastSeenLedger = event.ledger!.sequence;
