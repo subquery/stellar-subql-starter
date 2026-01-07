@@ -3,7 +3,7 @@ import {
   StellarHandlerKind,
   StellarProject,
 } from "@subql/types-stellar";
-import { Horizon } from "@stellar/stellar-sdk";
+import { xdr } from "@stellar/stellar-sdk";
 
 /* This is your project configuration */
 const project: StellarProject = {
@@ -41,16 +41,13 @@ const project: StellarProject = {
      * These settings can be found in your docker-compose.yaml, they will slow indexing but prevent your project being rate limited
      * You can find RPC endpoints for Stellar here https://soroban.stellar.org/docs/reference/rpc-list
      */
-    endpoint: ["https://horizon.stellar.org/"],
-    /* This is a specific Soroban endpoint
-      It is only required when you are using a soroban/EventHandler */
-    sorobanEndpoint: "https://soroban-rpc.mainnet.stellar.gateway.fm",
+    endpoint: ["https://stellar.api.onfinality.io/public"],
   },
   dataSources: [
     {
       kind: StellarDatasourceKind.Runtime,
       /* Set this as a logical start block, it might be block 1 (genesis) or when your contract was deployed */
-      startBlock: 50460000,
+      startBlock: 60212419,
       mapping: {
         file: "./dist/index.js",
         handlers: [
@@ -58,23 +55,23 @@ const project: StellarProject = {
             handler: "handleOperation",
             kind: StellarHandlerKind.Operation,
             filter: {
-              type: Horizon.HorizonApi.OperationResponseType.payment,
+              type: xdr.OperationType.payment().name,
             },
           },
-          {
-            handler: "handleCredit",
-            kind: StellarHandlerKind.Effects,
-            filter: {
-              type: "account_credited",
-            },
-          },
-          {
-            handler: "handleDebit",
-            kind: StellarHandlerKind.Effects,
-            filter: {
-              type: "account_debited",
-            },
-          },
+          // {
+          //   handler: "handleCredit",
+          //   kind: StellarHandlerKind.Effects,
+          //   filter: {
+          //     type: "account_credited",
+          //   },
+          // },
+          // {
+          //   handler: "handleDebit",
+          //   kind: StellarHandlerKind.Effects,
+          //   filter: {
+          //     type: "account_debited",
+          //   },
+          // },
           {
             handler: "handleEvent",
             kind: StellarHandlerKind.Event,

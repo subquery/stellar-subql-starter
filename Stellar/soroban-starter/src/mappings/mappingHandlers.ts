@@ -1,118 +1,147 @@
+import assert from "node:assert";
 import { Account, Credit, Debit, Payment, Transfer } from "../types";
 import {
+  StellarEvent,
   StellarOperation,
-  StellarEffect,
-  SorobanEvent,
+  getTransactionSourceAccount,
 } from "@subql/types-stellar";
+import { type Operation } from "@stellar/stellar-sdk";
 import {
-  AccountCredited,
-  AccountDebited,
-} from "@stellar/stellar-sdk/lib/horizon/types/effects";
-import type { Horizon, xdr } from "@stellar/stellar-sdk";
-import { Address, scValToBigInt } from "@stellar/stellar-base";
+  encodeMuxedAccountToAddress,
+  scValToNative,
+  // xdr,
+} from "@stellar/stellar-base";
 
-export async function handleOperation(
-  op: StellarOperation<Horizon.HorizonApi.PaymentOperationResponse>,
-): Promise<void> {
-  logger.info(`Indexing operation ${op.id}, type: ${op.type}`);
+export async function handleOperation({
+  index,
+  operation,
+  transaction,
+}: StellarOperation<Operation.Payment>): Promise<void> {
+  const body = operation.body();
+  logger.info(`Indexing operation, type: ${body.switch().name}`);
 
-  const fromAccount = await checkAndGetAccount(op.from, op.ledger!.sequence);
-  const toAccount = await checkAndGetAccount(op.to, op.ledger!.sequence);
+  assert(
+    body.switch().name === "payment", // === xdr.OperationType.payment(),
+    `Expected operation to be a payment, received ${body.switch().name}`,
+  );
+  const { ledger } = transaction.tx;
+
+  const sourceAccount = operation.sourceAccount()
+    ? encodeMuxedAccountToAddress(operation.sourceAccount()!, true)
+    : getTransactionSourceAccount(transaction.tx);
+  const dest = body.paymentOp().destination();
+  assert(sourceAccount, "Expected payment operation to have a source account");
+  assert(dest, "Expected payment operation to have a destination");
+
+  const fromAccount = await checkAndGetAccount(sourceAccount, ledger);
+  const toAccount = await checkAndGetAccount(
+    encodeMuxedAccountToAddress(dest, true),
+    ledger,
+  );
 
   const payment = Payment.create({
-    id: op.id,
+    id: `${transaction.tx.txHash}-${index}`,
     fromId: fromAccount.id,
     toId: toAccount.id,
-    txHash: op.transaction_hash,
-    amount: op.amount,
+    txHash: transaction.tx.txHash,
+    amount: body.paymentOp().amount().toString(),
   });
 
-  fromAccount.lastSeenLedger = op.ledger!.sequence;
-  toAccount.lastSeenLedger = op.ledger!.sequence;
+  fromAccount.lastSeenLedger = ledger;
+  toAccount.lastSeenLedger = ledger;
   await Promise.all([fromAccount.save(), toAccount.save(), payment.save()]);
 }
 
-export async function handleCredit(
-  effect: StellarEffect<AccountCredited>,
-): Promise<void> {
-  logger.info(`Indexing effect ${effect.id}, type: ${effect.type}`);
+// export async function handleCredit(
+//   effect: StellarEffect<AccountCredited>,
+// ): Promise<void> {
+//   logger.info(`Indexing effect ${effect.id}, type: ${effect.type}`);
 
-  const account = await checkAndGetAccount(
-    effect.account,
-    effect.ledger!.sequence,
-  );
+//   const account = await checkAndGetAccount(
+//     effect.account,
+//     effect.ledger!.sequence,
+//   );
 
-  const credit = Credit.create({
-    id: effect.id,
-    accountId: account.id,
-    amount: effect.amount,
-  });
+//   const credit = Credit.create({
+//     id: effect.id,
+//     accountId: account.id,
+//     amount: effect.amount,
+//   });
 
-  account.lastSeenLedger = effect.ledger!.sequence;
-  await Promise.all([account.save(), credit.save()]);
-}
+//   account.lastSeenLedger = effect.ledger!.sequence;
+//   await Promise.all([account.save(), credit.save()]);
+// }
 
-export async function handleDebit(
-  effect: StellarEffect<AccountDebited>,
-): Promise<void> {
-  logger.info(`Indexing effect ${effect.id}, type: ${effect.type}`);
+// export async function handleDebit(
+//   effect: StellarEffect<AccountDebited>,
+// ): Promise<void> {
+//   logger.info(`Indexing effect ${effect.id}, type: ${effect.type}`);
 
-  const account = await checkAndGetAccount(
-    effect.account,
-    effect.ledger!.sequence,
-  );
+//   const account = await checkAndGetAccount(
+//     effect.account,
+//     effect.ledger!.sequence,
+//   );
 
-  const debit = Debit.create({
-    id: effect.id,
-    accountId: account.id,
-    amount: effect.amount,
-  });
+//   const debit = Debit.create({
+//     id: effect.id,
+//     accountId: account.id,
+//     amount: effect.amount,
+//   });
 
-  account.lastSeenLedger = effect.ledger!.sequence;
-  await Promise.all([account.save(), debit.save()]);
-}
+//   account.lastSeenLedger = effect.ledger!.sequence;
+//   await Promise.all([account.save(), debit.save()]);
+// }
 
-export async function handleEvent(event: SorobanEvent): Promise<void> {
-  logger.info(
-    `New transfer event found at block ${event.ledger!.sequence.toString()}`,
-  );
+export async function handleEvent(event: StellarEvent): Promise<void> {
+  logger.info(`New transfer event found in transaction ${event.event.txHash}`);
 
   // Get data from the event
   // The transfer event has the following payload \[env, from, to\]
   // logger.info(JSON.stringify(event));
   const {
-    topic: [env, from, to],
-  } = event;
+    topic: [symbol, from, to],
+  } = event.event;
 
   try {
-    decodeAddress(from);
-    decodeAddress(to);
+    scValToNative(from);
   } catch (e) {
-    logger.info(`decode address failed`);
+    logger.info(
+      `decode from failed ${from.switch().name}, ${JSON.stringify(from, null, 2)}, error: ${e}`,
+    );
+  }
+
+  try {
+    scValToNative(to);
+  } catch (e) {
+    logger.info(
+      `decode to failed ${event.event.topic.length}, ${JSON.stringify(event.event.topic, null, 2)}, error: ${e}`,
+    );
   }
 
   const fromAccount = await checkAndGetAccount(
-    decodeAddress(from),
-    event.ledger!.sequence,
+    scValToNative(from),
+    event.event.ledger,
   );
   const toAccount = await checkAndGetAccount(
-    decodeAddress(to),
-    event.ledger!.sequence,
+    scValToNative(to),
+    event.event.ledger,
   );
+
+  logger.info(`VALUE TPE ${event.event.value.switch().name} `);
 
   // Create the new transfer entity
   const transfer = Transfer.create({
-    id: event.id,
-    ledger: event.ledger!.sequence,
-    date: new Date(event.ledgerClosedAt),
-    contract: event.contractId?.contractId().toString()!,
+    id: event.event.id,
+    ledger: event.event.ledger,
+    date: new Date(event.event.ledgerClosedAt),
+    contract: event.event.contractId?.contractId().toString()!,
     fromId: fromAccount.id,
     toId: toAccount.id,
-    value: scValToBigInt(event.value),
+    value: scValToNative(event.event.value),
   });
 
-  fromAccount.lastSeenLedger = event.ledger!.sequence;
-  toAccount.lastSeenLedger = event.ledger!.sequence;
+  fromAccount.lastSeenLedger = event.event.ledger;
+  toAccount.lastSeenLedger = event.event.ledger;
   await Promise.all([fromAccount.save(), toAccount.save(), transfer.save()]);
 }
 
@@ -129,13 +158,4 @@ async function checkAndGetAccount(
     });
   }
   return account;
-}
-
-// scValToNative not works, temp solution
-function decodeAddress(scVal: xdr.ScVal): string {
-  try {
-    return Address.account(scVal.address().accountId().ed25519()).toString();
-  } catch (e) {
-    return Address.contract(scVal.address().contractId()).toString();
-  }
 }
