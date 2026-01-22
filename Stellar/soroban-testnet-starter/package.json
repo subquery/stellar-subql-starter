@@ -22,12 +22,14 @@
   "license": "MIT",
   "dependencies": {
     "@subql/common": "latest",
-    "@subql/types-stellar": "latest"
+    "@subql/types-stellar": "latest",
+    "text-encoding": "^0.7.0"
   },
   "devDependencies": {
     "@subql/cli": "latest",
     "@subql/testing": "latest",
     "@subql/types": "latest",
+    "@types/text-encoding": "^0.0.40",
     "typescript": "latest"
   }
 }

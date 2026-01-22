@@ -8,7 +8,8 @@ import {
   AccountCredited,
   AccountDebited,
 } from "@stellar/stellar-sdk/lib/horizon/types/effects";
-import type { Horizon, xdr } from "@stellar/stellar-sdk";
+import type { Horizon } from "@stellar/stellar-sdk";
+import { xdr } from "@stellar/stellar-sdk";
 import { Address, scValToBigInt } from "@stellar/stellar-base";
 
 export async function handleOperation(
@@ -79,16 +80,30 @@ export async function handleEvent(event: SorobanEvent): Promise<void> {
 
   // Get data from the event
   // The transfer event has the following payload \[env, from, to\]
-  // logger.info(JSON.stringify(event));
   const {
     topic: [env, from, to],
   } = event;
 
-  try {
-    decodeAddress(from);
-    decodeAddress(to);
-  } catch (e) {
-    logger.info(`decode address failed`);
+  // Check if the topic values are actually addresses before decoding
+  // ScVal.switch() tells us the type - we need 'scvAddress' type
+  const fromType = from.switch().name;
+  const toType = to.switch().name;
+  if (fromType !== 'scvAddress' || toType !== 'scvAddress') {
+    logger.info(`Event topic is not an address type, skipping. from: ${fromType}, to: ${toType}`);
+    return;
+  }
+
+  // Check if address types are supported (0 = accountId, 1 = contractId)
+  // Skip if unsupported type (e.g., type 4 or others)
+  const fromAddressType = from.address().switch().value;
+  const toAddressType = to.address().switch().value;
+  if (fromAddressType !== 0 && fromAddressType !== 1) {
+    logger.info(`Unsupported from address type: ${fromAddressType}, skipping event`);
+    return;
+  }
+  if (toAddressType !== 0 && toAddressType !== 1) {
+    logger.info(`Unsupported to address type: ${toAddressType}, skipping event`);
+    return;
   }
 
   const fromAccount = await checkAndGetAccount(
@@ -100,12 +115,21 @@ export async function handleEvent(event: SorobanEvent): Promise<void> {
     event.ledger!.sequence,
   );
 
+  // Check if event.value is an integer type before converting
+  const valueType = event.value.switch().name;
+  const integerTypes = ['scvU32', 'scvI32', 'scvU64', 'scvI64', 'scvU128', 'scvI128', 'scvU256', 'scvI256'];
+  if (!integerTypes.includes(valueType)) {
+    logger.info(`Event value is not an integer type: ${valueType}, skipping event`);
+    return;
+  }
+
   // Create the new transfer entity
+  const contractAddress = event.contractId ? Buffer.from(event.contractId.contractId()).toString('hex') : '';
   const transfer = Transfer.create({
     id: event.id,
     ledger: event.ledger!.sequence,
     date: new Date(event.ledgerClosedAt),
-    contract: event.contractId?.contractId().toString()!,
+    contract: contractAddress,
     fromId: fromAccount.id,
     toId: toAccount.id,
     value: scValToBigInt(event.value),
@@ -133,9 +157,17 @@ async function checkAndGetAccount(
 
 // scValToNative not works, temp solution
 function decodeAddress(scVal: xdr.ScVal): string {
-  try {
-    return Address.account(scVal.address().accountId().ed25519()).toString();
-  } catch (e) {
-    return Address.contract(scVal.address().contractId()).toString();
+  const address = scVal.address();
+
+  // Must check which arm of the union is set FIRST using switch()
+  // Calling .accountId() or .contractId() directly throws if that arm isn't set
+  // ScAddressType enum: 0 = accountId, 1 = contractId
+  const addressType = address.switch().value;
+  if (addressType === 0) {
+    return Address.account(address.accountId().ed25519()).toString();
+  } else if (addressType === 1) {
+    return Address.contract(address.contractId() as unknown as Buffer).toString();
   }
+
+  throw new Error(`Unknown address type: ${addressType}`);
 }
